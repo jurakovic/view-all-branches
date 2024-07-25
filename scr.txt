@@ -1,0 +1,20 @@
+
+currentLoc = document.location.href.substring(18)
+anchor = document.querySelector(`a[href='${currentLoc}/branches']`)
+anchor.href = `${anchor.href}/all`
+
+
+
+javascript: void((function() {
+	currentLoc = document.location.href.substring(18)
+	anchor = document.querySelector(`a[href='${currentLoc}/branches']`)
+	anchor.href = `${anchor.href}/all`
+})())
+
+
+javascript:currentLoc=document.location.href.substring(18),(anchor=document.querySelector(`a[href='${currentLoc}/branches']`)).href=`${anchor.href}/all`;
+
+
+
+javascript:void((function() { currentLoc = document.location.href.substring(18); anchor = document.querySelector(`a[href='${currentLoc}/branches']`); anchor.href = `${anchor.href}/all`; anchor.href = `${anchor.href}/all`; })())
+
