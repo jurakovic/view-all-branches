@@ -5,7 +5,7 @@ function injectScript(tabId) {
     chrome.scripting.executeScript(
         {
             target: { tabId: tabId },
-            files: ['content.js'],
+            function: changeBranchesHref,
         }
     );
 }
@@ -14,6 +14,7 @@ function injectScript(tabId) {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     if (tab.url?.startsWith("edge://")) return undefined;
+    if (!tab.url?.startsWith("https://github.com")) return undefined;
 
     // check for a URL in the changeInfo parameter (url is only added when it is changed)
     //if (changeInfo.url) {
@@ -21,5 +22,21 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         injectScript(tabId);
     }
 
-    console.log(changeInfo);
+    //console.log(changeInfo);
 });
+
+function changeBranchesHref() {
+    //console.log("page loaded")
+
+    currentLoc = document.location.href.substring(18)
+    //console.log(currentLoc)
+    nodeList = document.querySelectorAll(`a[href='${currentLoc}/branches']`)
+    //console.log(nodeList)
+
+    nodeList.forEach(anchor => {
+        anchor.href = `${anchor.href}/all`
+        //console.log(anchor.href)
+    });
+
+    console.log("branches href changed")
+}
