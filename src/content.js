@@ -50,13 +50,14 @@
 
 
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+/*const*/ sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
-const changeBranchesHref = async () => {
+/*const*/ changeBranchesHref = async () => {
 	await sleep(100)
 	console.log("page loaded")
 
 	currentLoc = document.location.href.substring(18)
+	console.log(currentLoc)
 	nodeList = document.querySelectorAll(`a[href='${currentLoc}/branches']`)
 	console.log(nodeList)
 	
@@ -65,7 +66,6 @@ const changeBranchesHref = async () => {
 		console.log(anchor.href)
 	});
 
-	
 	console.log(window)
 }
 
