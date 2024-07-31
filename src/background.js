@@ -2,7 +2,7 @@
 function changeBranchesHref() {
 	//console.log("page loaded")
 
-	rx = /^https:\/\/github\.com\/([a-zA-Z0-9-]+)\/([a-zA-Z0-9-]+)\/?/
+	rx = /^https:\/\/github\.com\/([a-zA-Z0-9-\.]+)\/([a-zA-Z0-9-\.]+)\/?/
 	match = rx.exec(document.location)
 	user = match[1]
 	repo = match[2]
@@ -42,7 +42,7 @@ function injectScript(tabId) {
 // adds a listener to tab change
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
-	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\/?/;
+	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
 
 	if (urlPattern.test(tab.url)) {
 		//console.log('matched url');
