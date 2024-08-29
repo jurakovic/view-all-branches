@@ -4,7 +4,8 @@
 	"version": "1.0",
 	"permissions": [ "tabs", "scripting" ],
 	"host_permissions": [
-		"https://github.com/*/*"
+		"https://github.com/*/*",
+		"https://arstechnica.com/*"
 	],
 	"background": {
 		"service_worker": "background.js"

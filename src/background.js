@@ -39,12 +39,37 @@ function injectScript(tabId) {
 	);
 }
 
+
+function removeOverflowHidden() {
+	//console.log("page loaded")
+
+	setTimeout(() => { 
+		body = document.getElementsByTagName('body')[0];
+		console.log(body.style);
+		body.style.overflow = "";
+
+		html = document.getElementsByTagName('html')[0];
+		console.log(html.style);
+		html.style.overflow = "";
+	}, 1000);
+}
+
+// function that injects code to a specific tab
+function injectScript2(tabId) {
+	chrome.scripting.executeScript(
+		{
+			target: { tabId: tabId },
+			function: removeOverflowHidden,
+		}
+	);
+}
+
 // adds a listener to tab change
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
-	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
+	const githubUrl = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
 
-	if (urlPattern.test(tab.url)) {
+	if (githubUrl.test(tab.url)) {
 		//console.log('matched url');
 
 		//if (changeInfo.url) {
@@ -59,4 +84,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	//{
 	//	console.log('not matched url');
 	//}
+
+	const arsUrl = /^https:\/\/arstechnica\.com/;
+
+	if (arsUrl.test(tab.url)) {
+		console.log('matched ars url');
+
+		//if (changeInfo.url) {
+		if (changeInfo.status === 'complete') {
+			//console.log('injecting script');
+			injectScript2(tabId);
+		}
+
+		//console.log(changeInfo);
+	}
 });
