@@ -1,5 +1,23 @@
 
-export function injectScriptAzureDevOps(tabId) {
+export function checkAzureDevOps(tabId, changeInfo, tab, flagEnabled) {
+	//https://dev.azure.com/belcar/_git/Belcar%20New%20Architecture/branches
+	//const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+\/_git\/[a-zA-Z0-9%-\.]+\/branches$/;
+	const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
+
+	if (flagEnabled && azureDevopsUrl.test(tab.url)) {
+		//console.log('matched url');
+
+		//if (changeInfo.url) {
+		if (changeInfo.status === 'complete') {
+			//console.log('injecting script');
+			injectScriptAzureDevOps(tabId);
+		}
+
+		//console.log(changeInfo);
+	}
+};
+
+function injectScriptAzureDevOps(tabId) {
 	chrome.scripting.executeScript(
 		{
 			target: { tabId: tabId },

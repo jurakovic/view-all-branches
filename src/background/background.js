@@ -1,5 +1,5 @@
-import { injectScriptGitHub } from './scripts/injectScriptGitHub.js';
-import { injectScriptAzureDevOps } from './scripts/injectScriptAzureDevOps.js';
+import { checkGitHub } from './scripts/GitHub.js';
+import { checkAzureDevOps } from './scripts/AzureDevOps.js';
 
 // Global variable to store the flag value
 let flagEnabled = false;
@@ -25,38 +25,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
 // adds a listener to tab change
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-
-	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
-
-	if (flagEnabled && urlPattern.test(tab.url)) {
-		//console.log('matched url');
-
-		//if (changeInfo.url) {
-		if (changeInfo.status === 'complete') {
-			//console.log('injecting script');
-			injectScriptGitHub(tabId);
-		}
-
-		//console.log(changeInfo);
-	}
-	//else
-	//{
-	//	console.log('not matched url');
-	//}
-
-	//https://dev.azure.com/belcar/_git/Belcar%20New%20Architecture/branches
-	//const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+\/_git\/[a-zA-Z0-9%-\.]+\/branches$/;
-	const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
-
-	if (flagEnabled && azureDevopsUrl.test(tab.url)) {
-		//console.log('matched url');
-
-		//if (changeInfo.url) {
-		if (changeInfo.status === 'complete') {
-			//console.log('injecting script');
-			injectScriptAzureDevOps(tabId);
-		}
-
-		//console.log(changeInfo);
-	}
+	checkAzureDevOps(tabId, changeInfo, tab, flagEnabled);
+	checkGitHub(tabId, changeInfo, tab, flagEnabled);
 });

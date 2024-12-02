@@ -1,5 +1,25 @@
 
-export function injectScriptGitHub(tabId) {
+export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
+	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
+
+	if (flagEnabled && urlPattern.test(tab.url)) {
+		//console.log('matched url');
+
+		//if (changeInfo.url) {
+		if (changeInfo.status === 'complete') {
+			//console.log('injecting script');
+			injectScriptGitHub(tabId);
+		}
+
+		//console.log(changeInfo);
+	}
+	//else
+	//{
+	//	console.log('not matched url');
+	//}
+};
+
+function injectScriptGitHub(tabId) {
 	//if (!flagEnabled) {
 	//	console.log('Feature is disabled. Not injecting script.');
 	//	return;
