@@ -1,4 +1,26 @@
 
+// Global variable to store the flag value
+let flagEnabled = false;
+
+// Function to update the flag value when it changes
+function updateFlagValue() {
+	chrome.storage.sync.get(['flagEnabled'], (result) => {
+		flagEnabled = result.flagEnabled || false; // Default to false if not set
+		console.log('Flag value updated:', flagEnabled);
+	});
+}
+
+// Call updateFlagValue initially to load the current flag state
+updateFlagValue();
+
+// Listen for changes in the storage to update the flag dynamically
+chrome.storage.onChanged.addListener((changes, areaName) => {
+	if (areaName === 'sync' && changes.flagEnabled) {
+		flagEnabled = changes.flagEnabled.newValue;
+		console.log('Flag value changed:', flagEnabled);
+	}
+});
+
 function changeBranchesHref() {
 	//console.log("page loaded")
 
@@ -31,6 +53,11 @@ function changeBranchesHref() {
 
 // function that injects code to a specific tab
 function injectScript0(tabId) {
+	if (!flagEnabled) {
+		console.log('Feature is disabled. Not injecting script.');
+		return;
+	}
+
 	chrome.scripting.executeScript(
 		{
 			target: { tabId: tabId },
