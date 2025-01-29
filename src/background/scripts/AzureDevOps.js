@@ -1,3 +1,4 @@
+import { log } from '../../utils/logger.js';
 
 export function checkAzureDevOps(tabId, changeInfo, tab, flagEnabled) {
 	//https://dev.azure.com/belcar/_git/Belcar%20New%20Architecture/branches
@@ -5,15 +6,15 @@ export function checkAzureDevOps(tabId, changeInfo, tab, flagEnabled) {
 	const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
 
 	if (flagEnabled && azureDevopsUrl.test(tab.url)) {
-		//console.log('matched url');
+		log('matched url');
 
 		//if (changeInfo.url) {
 		if (changeInfo.status === 'complete') {
-			//console.log('injecting script');
+			log('injecting script');
 			injectScriptAzureDevOps(tabId);
 		}
 
-		//console.log(changeInfo);
+		log(changeInfo);
 	}
 };
 
@@ -27,22 +28,22 @@ function injectScriptAzureDevOps(tabId) {
 }
 
 function changeBranchesHref1() {
-	//console.log("page loaded")
-
-	rx = /^https:\/\/dev\.azure\.com\/([a-zA-Z0-9%-\.]+)(\/_git)?\/([a-zA-Z0-9%-\.]+)/
+	console.log("page loaded")
+	rx = /^https:\/\/dev\.azure\.com\/(?<user>[a-zA-Z0-9%-\.]+(?:\/*)[a-zA-Z0-9%-\.]+)?(?:\/_git)\/([a-zA-Z0-9%-\.]+)/
 	match = rx.exec(document.location)
-	proj = match[1]
-	repo = match[3]
-	//console.log(proj)
-	//console.log(repo)
+	console.log(match)
+	proj = match[1] // user + project (if project applicable)
+	repo = match[2]
+	console.log(proj)
+	console.log(repo)
 
 	//href="/belcar/_git/Belcar%20New%20Architecture/branches"
 	nodeList = document.querySelectorAll(`a[href='/${proj}/_git/${repo}/branches']`)
-	//console.log(nodeList)
-	//console.log(nodeList.length)
+	console.log(nodeList)
+	console.log(nodeList.length)
 
 	if (nodeList.length > 0) {
-		//console.log("has nodes")
+		console.log("has nodes")
 
 		nodeList.forEach(anchor => {
 			anchor.addEventListener('click', function (event) {
@@ -51,7 +52,7 @@ function changeBranchesHref1() {
 			});
 
 			anchor.href = `${anchor.href}?_a=all`
-			//console.log(anchor.href)
+			console.log(anchor.href)
 		});
 
 		console.log("branches href changed")
