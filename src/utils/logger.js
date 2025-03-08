@@ -13,27 +13,20 @@ function updateFlagValue() {
 // Call updateFlagValue initially to load the current flag state
 updateFlagValue();
 
-export function log(message, data) {
+export function log(message) {
     if (loggingEnabled) {
         const timestamp = new Date().toISOString();
 
         let logMessage;
-        //if (typeof message === 'object') {
-        //    try {
-        //        logMessage = JSON.stringify(message, null, 2); // Pretty print objects
-        //    } catch (e) {
-        //        logMessage = `[Invalid Object: ${e.message}]`;
-        //    }
-        //} else {
-        //    logMessage = message;
-        //}
-
-        if (data) {
-            logMessage = `${message} ${JSON.stringify(data, null, 2)}`;
+        if (typeof message === 'object') {
+            try {
+                logMessage = JSON.stringify(message, null, 2); // Pretty print objects
+            } catch (e) {
+                logMessage = `[Invalid Object: ${e.message}]`;
+            }
         } else {
             logMessage = message;
         }
-
 
         const formattedLog = `[${timestamp}] ${logMessage}`;
 

@@ -30,14 +30,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	checkGitHub(tabId, changeInfo, tab, flagEnabled);
 });
 
-chrome.runtime.onMessage.addListener((message, sender) => {
-	//log(message.message);
-	//log(message.message, message.data);
-
-	if (message.data) {
-        log(message.message, message.data);
-    } else {
-        log(message.message);
-    }
-
-});
+//chrome.runtime.onMessage.addListener((message, sender) => {
+//	log(message.message);
+//	//log(message.message, message.data);
+//
+//	//if (message.data) {
+//    //    log(message.message, message.data);
+//    //} else {
+//    //    log(message.message);
+//    //}
+//
+//});

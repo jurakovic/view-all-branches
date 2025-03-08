@@ -1,4 +1,4 @@
-import { log } from '../../utils/logger.js';
+﻿import { log } from '../../utils/logger.js';
 
 export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
 	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
@@ -16,6 +16,19 @@ export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
 };
 
 function injectScriptGitHub(tabId) {
+	//chrome.scripting.executeScript({
+	//	target: { tabId: tabId },
+	//	files: ["utils/pageLogger.js"]
+	//});
+	chrome.scripting.executeScript({
+		target: { tabId: tabId },
+		func: () => {
+			const script = document.createElement("script");
+			script.src = chrome.runtime.getURL("utils/pageLogger.js");
+			script.onload = () => script.remove(); // Cleanup after loading
+			document.head.appendChild(script);
+		}
+	});
 	chrome.scripting.executeScript(
 		{
 			target: { tabId: tabId },
@@ -25,46 +38,46 @@ function injectScriptGitHub(tabId) {
 }
 
 function changeBranchesHref() {
-	function log(message, data) {
-		//chrome.runtime.sendMessage({ type: "log", level: "info", message });
-		chrome.runtime.sendMessage({
-			type: "log",
-			level: "info",
-			message: message,
-			data: data // Send additional data as an object
-			//message: typeof message === "string" ? message : "[OBJECT LOG]",
-			//data: typeof message === "object" ? message : null
-		});
-	}
+	//function log(message, data) {
+	//	chrome.runtime.sendMessage({ type: "log", level: "info", message });
+	//	//chrome.runtime.sendMessage({
+	//	//	type: "log",
+	//	//	level: "info",
+	//	//	message: message,
+	//	//	data: data // Send additional data as an object
+	//	//	//message: typeof message === "string" ? message : "[OBJECT LOG]",
+	//	//	//data: typeof message === "object" ? message : null
+	//	//});
+	//}
 
-	log("page loaded")
+	window.pageLog("page loaded")
 
 	rx = /^https:\/\/github\.com\/([a-zA-Z0-9-\.]+)\/([a-zA-Z0-9-\.]+)\/?/
 	match = rx.exec(document.location)
 	user = match[1]
 	repo = match[2]
-	log(user)
-	log(repo)
+	window.pageLog(user)
+	window.pageLog(repo)
 
 	nodeList = document.querySelectorAll(`a[href='/${user}/${repo}/branches']`)
 	console.log(nodeList)
-	log(nodeList)
+	window.pageLog(nodeList)
 	//log("asd", nodeList)
-	log("asd", JSON.stringify(nodeList, null, 2))
-	log(nodeList.length)
+	window.pageLog("asd", JSON.stringify(nodeList, null, 2))
+	window.pageLog(nodeList.length)
 
 	if (nodeList.length > 0) {
-		log("has nodes")
+		window.pageLog("has nodes")
 
 		nodeList.forEach(anchor => {
 			anchor.href = `${anchor.href}/all`
-			log(anchor.href)
+			window.pageLog(anchor.href)
 		});
 
-		log("branches href changed")
+		window.pageLog("branches href changed")
 	}
 	else
 	{
-		log('has no nodes');
+		window.pageLog('has no nodes');
 	}
 }
