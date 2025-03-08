@@ -1,4 +1,4 @@
-﻿import { log } from '../../utils/logger.js';
+import { log } from '../../utils/logger.js';
 
 export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
 	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
@@ -16,19 +16,6 @@ export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
 };
 
 function injectScriptGitHub(tabId) {
-	//chrome.scripting.executeScript({
-	//	target: { tabId: tabId },
-	//	files: ["utils/pageLogger.js"]
-	//});
-	chrome.scripting.executeScript({
-		target: { tabId: tabId },
-		func: () => {
-			const script = document.createElement("script");
-			script.src = chrome.runtime.getURL("utils/pageLogger.js");
-			script.onload = () => script.remove(); // Cleanup after loading
-			document.head.appendChild(script);
-		}
-	});
 	chrome.scripting.executeScript(
 		{
 			target: { tabId: tabId },
@@ -38,46 +25,31 @@ function injectScriptGitHub(tabId) {
 }
 
 function changeBranchesHref() {
-	//function log(message, data) {
-	//	chrome.runtime.sendMessage({ type: "log", level: "info", message });
-	//	//chrome.runtime.sendMessage({
-	//	//	type: "log",
-	//	//	level: "info",
-	//	//	message: message,
-	//	//	data: data // Send additional data as an object
-	//	//	//message: typeof message === "string" ? message : "[OBJECT LOG]",
-	//	//	//data: typeof message === "object" ? message : null
-	//	//});
-	//}
-
-	window.pageLog("page loaded")
+	console.log("page loaded")
 
 	rx = /^https:\/\/github\.com\/([a-zA-Z0-9-\.]+)\/([a-zA-Z0-9-\.]+)\/?/
 	match = rx.exec(document.location)
 	user = match[1]
 	repo = match[2]
-	window.pageLog(user)
-	window.pageLog(repo)
+	console.log(user)
+	console.log(repo)
 
 	nodeList = document.querySelectorAll(`a[href='/${user}/${repo}/branches']`)
 	console.log(nodeList)
-	window.pageLog(nodeList)
-	//log("asd", nodeList)
-	window.pageLog("asd", JSON.stringify(nodeList, null, 2))
-	window.pageLog(nodeList.length)
+	console.log(nodeList.length)
 
 	if (nodeList.length > 0) {
-		window.pageLog("has nodes")
+		console.log("has nodes")
 
 		nodeList.forEach(anchor => {
 			anchor.href = `${anchor.href}/all`
-			window.pageLog(anchor.href)
+			console.log(anchor.href)
 		});
 
-		window.pageLog("branches href changed")
+		console.log("branches href changed")
 	}
 	else
 	{
-		window.pageLog('has no nodes');
+		console.log('has no nodes');
 	}
 }

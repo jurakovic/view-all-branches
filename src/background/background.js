@@ -1,6 +1,5 @@
 import { checkGitHub } from './scripts/GitHub.js';
 import { checkAzureDevOps } from './scripts/AzureDevOps.js';
-import { log } from '../../utils/logger.js';
 
 // Global variable to store the flag value
 let flagEnabled = false;
@@ -29,15 +28,3 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	checkAzureDevOps(tabId, changeInfo, tab, flagEnabled);
 	checkGitHub(tabId, changeInfo, tab, flagEnabled);
 });
-
-//chrome.runtime.onMessage.addListener((message, sender) => {
-//	log(message.message);
-//	//log(message.message, message.data);
-//
-//	//if (message.data) {
-//    //    log(message.message, message.data);
-//    //} else {
-//    //    log(message.message);
-//    //}
-//
-//});
