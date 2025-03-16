@@ -1,7 +1,7 @@
 import { log } from '../../utils/logger.js';
 
 export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
-	const urlPattern = /^https:\/\/github\.com\/[a-zA-Z0-9-\.]+\/[a-zA-Z0-9-\.]+\/?/;
+	const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
 
 	if (flagEnabled && urlPattern.test(tab.url)) {
 		log('matched url');
@@ -27,7 +27,7 @@ function injectScriptGitHub(tabId) {
 function changeBranchesHref() {
 	console.log("page loaded")
 
-	rx = /^https:\/\/github\.com\/([a-zA-Z0-9-\.]+)\/([a-zA-Z0-9-\.]+)\/?/
+	rx = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/
 	match = rx.exec(document.location)
 	user = match[1]
 	repo = match[2]
