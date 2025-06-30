@@ -1,6 +1,6 @@
 {
 	"manifest_version": 3,
-	"name": "GitHub Branches URL Changer",
+	"name": "View All Branches",
 	"version": "1.0",
 	"permissions": [ "tabs", "scripting", "storage" ],
 	"host_permissions": [
