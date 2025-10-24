@@ -3,15 +3,10 @@ import { log } from '../../utils/logger.js';
 export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
     const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
 
-    if (flagEnabled && urlPattern.test(tab.url)) {
-        log('matched url');
-
-        if (changeInfo.status === 'complete') {
-            log('injecting script');
-            injectScriptGitHub(tabId);
-        }
-
-        log(changeInfo);
+    if (flagEnabled && urlPattern.test(tab.url) &&
+        changeInfo.status === 'complete') {
+        log('matched url, page load complete, injecting script');
+        injectScriptGitHub(tabId);
     }
 };
 
