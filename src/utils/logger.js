@@ -6,12 +6,20 @@ let loggingEnabled = false;
 function updateFlagValue() {
     chrome.storage.sync.get(['loggingEnabled'], (result) => {
         loggingEnabled = result.loggingEnabled || false; // Default to false if not set
-        console.log('Flag value updated:', loggingEnabled);
+        console.log('Logging flag value updated:', loggingEnabled);
     });
 }
 
 // Call updateFlagValue initially to load the current flag state
 updateFlagValue();
+
+// Listen for changes in the storage to update the flag dynamically
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === 'sync' && changes.loggingEnabled) {
+        loggingEnabled = changes.loggingEnabled.newValue;
+        console.log('Logging flag value changed:', loggingEnabled);
+    }
+});
 
 export function log(message) {
     if (loggingEnabled) {

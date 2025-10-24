@@ -27,14 +27,16 @@ function injectScriptGitHub(tabId) {
 function changeBranchesHref() {
     console.log("page loaded")
 
-    rx = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/
-    match = rx.exec(document.location)
-    user = match[1]
-    repo = match[2]
+    const rx = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/
+    const match = rx.exec(document.location)
+    if (!match) return;
+
+    const user = match[1]
+    const repo = match[2]
     console.log(user)
     console.log(repo)
 
-    nodeList = document.querySelectorAll(`a[href='/${user}/${repo}/branches']`)
+    const nodeList = document.querySelectorAll(`a[href='/${user}/${repo}/branches']`)
     console.log(nodeList)
     console.log(nodeList.length)
 

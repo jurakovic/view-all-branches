@@ -1,13 +1,10 @@
-// Get references to the checkbox
+    // Get references to the checkbox
 const checkbox = document.getElementById('myFlagCheckbox');
 const cbxLogging = document.getElementById('cbxLogging');
 
 // Load the saved state from storage when the popup opens
-chrome.storage.sync.get(['flagEnabled'], (result) => {
+chrome.storage.sync.get(['flagEnabled', 'loggingEnabled'], (result) => {
     checkbox.checked = result.flagEnabled || false; // Default to false
-});
-
-chrome.storage.sync.get(['loggingEnabled'], (result) => {
     cbxLogging.checked = result.loggingEnabled || false; // Default to false
 });
 
@@ -20,6 +17,6 @@ checkbox.addEventListener('change', () => {
 
 cbxLogging.addEventListener('change', () => {
     chrome.storage.sync.set({ loggingEnabled: cbxLogging.checked }, () => {
-        console.log('Flag state saved:', cbxLogging.checked);
+        console.log('Logging state saved:', cbxLogging.checked);
     });
 });
