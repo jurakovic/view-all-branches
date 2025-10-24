@@ -65,7 +65,4 @@ function changeBranchesHref(loggingEnabled) {
 
         log("Branches href changed");
     }
-    else {
-        log('No nodes found');
-    }
 }
