@@ -7,24 +7,58 @@
 	<style>
 		body {
 			font-family: Arial, sans-serif;
-			margin: 10px;
-			width: 200px;
+			margin: 15px;
+			width: 220px;
+			background-color: #f9f9f9;
 		}
 
-		label {
-			font-size: 14px;
+		h2 {
+			font-size: 16px;
+			margin-top: 0;
+			margin-bottom: 12px;
+			color: #333;
+			text-align: center;
 		}
+
+		.settings-container {
+			display: flex;
+			flex-direction: column;
+			gap: 10px; /* Creates space between the setting items */
+		}
+
+		.setting-item {
+			display: flex;
+			align-items: center; /* Vertically aligns the checkbox and text */
+			font-size: 14px;
+			cursor: pointer;
+			padding: 8px;
+			border-radius: 4px;
+			background-color: #fff;
+			border: 1px solid #ddd;
+			transition: background-color 0.2s;
+		}
+
+			.setting-item:hover {
+				background-color: #f0f0f0;
+			}
+
+			.setting-item input[type="checkbox"] {
+				margin-right: 8px; /* Adds space between the checkbox and the label text */
+			}
 	</style>
 </head>
 <body>
-	<label>
-		<input type="checkbox" id="myFlagCheckbox" />
-		Enable Feature
-	</label>
-	<label>
-		<input type="checkbox" id="cbxLogging" />
-		Enable Logging
-	</label>
+	<h2>View All Branches</h2>
+	<div class="settings-container">
+		<label class="setting-item">
+			<input type="checkbox" id="cbxGitHub" />
+			<span>Enable href update</span>
+		</label>
+		<label class="setting-item">
+			<input type="checkbox" id="cbxLogging" />
+			<span>Enable logging</span>
+		</label>
+	</div>
 	<script src="popup.js"></script>
 </body>
 </html>
