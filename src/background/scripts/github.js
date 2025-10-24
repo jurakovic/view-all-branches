@@ -44,7 +44,7 @@ function changeBranchesHref(loggingEnabled) {
         }
     };
 
-    log("page loaded");
+    log("Page loaded");
 
     const rx = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
     const match = rx.exec(document.location);
@@ -56,20 +56,16 @@ function changeBranchesHref(loggingEnabled) {
     log(`Repo: ${repo}`);
 
     const nodeList = document.querySelectorAll(`a[href='/${user}/${repo}/branches']`);
-    log(nodeList);
     log(`Found ${nodeList.length} nodes`);
 
     if (nodeList.length > 0) {
-        log("has nodes");
-
         nodeList.forEach(anchor => {
             anchor.href = `${anchor.href}/all`;
-            log(`Changed href to: ${anchor.href}`);
         });
 
-        log("branches href changed");
+        log("Branches href changed");
     }
     else {
-        log('has no nodes');
+        log('No nodes found');
     }
 }
