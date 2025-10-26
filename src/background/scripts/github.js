@@ -44,7 +44,7 @@ function changeBranchesHref(loggingEnabled) {
         }
     };
 
-    log("Page loaded");
+    log("Page loaded, setting up link observer.");
 
     const rx = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
     const match = rx.exec(document.location);
@@ -54,15 +54,33 @@ function changeBranchesHref(loggingEnabled) {
     const repo = match[2];
     log(`User: ${user}`);
     log(`Repo: ${repo}`);
+    const branchesHref = `/${user}/${repo}/branches`;
 
-    const nodeList = document.querySelectorAll(`a[href='/${user}/${repo}/branches']`);
-    log(`Found ${nodeList.length} nodes`);
+    // This function finds and updates the branch links
+    const updateBranchLinks = () => {
+        // Select links that have the exact href and have not been updated yet
+        const nodeList = document.querySelectorAll(`a[href='${branchesHref}']`);
 
-    if (nodeList.length > 0) {
-        nodeList.forEach(anchor => {
-            anchor.href = `${anchor.href}/all`;
-        });
+        if (nodeList.length > 0) {
+            log(`Found and updated ${nodeList.length} new branch link(s).`);
+            nodeList.forEach(anchor => {
+                anchor.href = `${anchor.href}/all`;
+            });
+        }
+    };
 
-        log("Branches href changed");
-    }
+    // Create an observer to watch for DOM changes
+    const observer = new MutationObserver((mutations) => {
+        // We can debounce this if it becomes a performance issue, but for now, it's fine.
+        updateBranchLinks();
+    });
+
+    // Start observing the whole document for additions of new nodes
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // Run it once initially for any links that are already on the page
+    updateBranchLinks();
 }
