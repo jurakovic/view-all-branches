@@ -4,7 +4,8 @@
     "version": "1.0",
     "permissions": [ "tabs", "scripting", "storage" ],
     "host_permissions": [
-        "https://github.com/*/*"
+        "https://github.com/*/*",
+        "https://dev.azure.com/*"
     ],
     "action": {
         "default_popup": "popup/popup.html"

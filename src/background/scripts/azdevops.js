@@ -1,92 +1,95 @@
 import { log } from '../../utils/logger.js';
 
 export function checkAzureDevOps(tabId, changeInfo, tab, flagEnabled) {
-	//https://dev.azure.com/belcar/_git/Belcar%20New%20Architecture/branches
-	//const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+\/_git\/[a-zA-Z0-9%-\.]+\/branches$/;
-	const azureDevopsUrl = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
+    const urlPattern = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
 
-	if (flagEnabled && azureDevopsUrl.test(tab.url)) {
-		log('matched url');
+    if (flagEnabled && urlPattern.test(tab.url) &&
+        changeInfo.status === 'complete') {
+        log('matched url, page load complete, injecting script');
 
-		//if (changeInfo.url) {
-		if (changeInfo.status === 'complete') {
-			log('injecting script');
-			injectScriptAzureDevOps(tabId);
-		}
-
-		log(changeInfo);
-	}
+        // Get the logging state and pass it to the injected script
+        chrome.storage.sync.get(['loggingEnabled'], (result) => {
+            injectScriptAzureDevOps(tabId, result.loggingEnabled || false);
+        });
+    }
 };
 
-function injectScriptAzureDevOps(tabId) {
-	chrome.scripting.executeScript(
-		{
-			target: { tabId: tabId },
-			function: changeBranchesHref1,
-		}
-	);
+function injectScriptAzureDevOps(tabId, loggingEnabled) {
+    chrome.scripting.executeScript(
+        {
+            target: { tabId: tabId },
+            function: changeBranchesHref,
+            args: [loggingEnabled] // Pass loggingEnabled state as an argument
+        }
+    );
 }
 
-function changeBranchesHref1() {
-	console.log("page loaded")
-	rx = /^https:\/\/dev\.azure\.com\/(?<user>[a-zA-Z0-9%-\.]+(?:\/*)[a-zA-Z0-9%-\.]+)?(?:\/_git)\/([a-zA-Z0-9%-\.]+)/
-	match = rx.exec(document.location)
-	console.log(match)
-	proj = match[1] // user + project (if project applicable)
-	repo = match[2]
-	console.log(proj)
-	console.log(repo)
+function changeBranchesHref(loggingEnabled) {
+    // Helper function for logging within the page context
+    const log = (message) => {
+        if (loggingEnabled) {
+            const timestamp = new Date().toISOString();
+            let logMessage;
+            if (typeof message === 'object') {
+                try {
+                    logMessage = JSON.stringify(message, null, 2); // Pretty print objects
+                } catch (e) {
+                    logMessage = `[Invalid Object: ${e.message}]`;
+                }
+            } else {
+                logMessage = message;
+            }
+            const formattedLog = `[${timestamp}] ${logMessage}`;
+            console.log(formattedLog);
+        }
+    };
 
-	//href="/belcar/_git/Belcar%20New%20Architecture/branches"
-	nodeList = document.querySelectorAll(`a[href='/${proj}/_git/${repo}/branches']`)
-	console.log(nodeList)
-	console.log(nodeList.length)
+    log("Page loaded, setting up link observer.");
 
-	if (nodeList.length > 0) {
-		console.log("has nodes")
+    const rx = /^https:\/\/dev\.azure\.com\/(?<user>[a-zA-Z0-9%-\.]+(?:\/*)[a-zA-Z0-9%-\.]+)?(?:\/_git)\/([a-zA-Z0-9%-\.]+)/
+    const match = rx.exec(document.location);
+    if (!match) return;
 
-		nodeList.forEach(anchor => {
-			anchor.addEventListener('click', function (event) {
-				event.preventDefault(); // prevent azure devops from handling the click
-				window.location.href = anchor.href;
-			});
+    const proj = match[1];
+    const repo = match[2];
+    log(`User: ${proj}`);
+    log(`Repo: ${repo}`);
+    const branchesHref = `/${proj}/_git/${repo}/branches`;
 
-			anchor.href = `${anchor.href}?_a=all`
-			console.log(anchor.href)
-		});
+    // This function finds and updates the branch links
+    const updateBranchLinks = () => {
+        // Select links that have the exact href and have not been updated yet
+        const nodeList = document.querySelectorAll(`a[href='${branchesHref}']`);
 
-		console.log("branches href changed")
-	}
-	//else
-	//{
-	//	console.log('has no nodes');
-	//}
+        if (nodeList.length > 0) {
+            log(`Found and updated ${nodeList.length} new branch link(s).`);
 
-	/*
-	// handle hover menu
-	document.addEventListener('mouseover', function (event) {
-	//document.querySelector("#__bolt-ms-vss-code-web-code-hub-group-container").addEventListener('mouseover', function (event) {
-	//document.querySelector("#__bolt-ms-vss-code-web-branches-hub-text").addEventListener('mouseover', function (event) {
-	//document.querySelector("#__bolt-menu-ms-vss-code-web-code-hub-group-callout").addEventListener('mouseover', function (event) {
-		console.log("mouseover")
-		const anchor = event.target.closest(`a[href='/${proj}/_git/${repo}/branches']`);
-		if (anchor) {
-			anchor.addEventListener('click', function (event1) {
-				event1.preventDefault(); // prevent azure devops from handling the click
-				window.location.href = anchor.href;
-			});
-		
-			anchor.href = `${anchor.href}?_a=all`
-			//console.log("hover menu branches href changed")
-		}
+            nodeList.forEach(anchor => {
+                anchor.addEventListener('click', function (event) {
+                    event.preventDefault(); // prevent azure devops from handling the click
+                    window.location.href = anchor.href;
+                });
 
-		//if (
-		//	event.target.tagName === 'A' &&
-		//	event.target.getAttribute('href') === '/${proj}/_git/${repo}/branches'
-		//) {
-		//	event.target.href = `${event.target.href}?_a=all`
-		//	console.log("Updated link to: ", event.target.href);
-		//}
-	});
-	*/
+                anchor.href = `${anchor.href}?_a=all`
+                // Apply styles for debugging
+                anchor.style.color = 'red';
+                anchor.style.fontWeight = 'bold';
+            });
+        }
+    };
+
+    // Create an observer to watch for DOM changes
+    const observer = new MutationObserver((mutations) => {
+        // We can debounce this if it becomes a performance issue, but for now, it's fine.
+        updateBranchLinks();
+    });
+
+    // Start observing the whole document for additions of new nodes
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    // Run it once initially for any links that are already on the page
+    updateBranchLinks();
 }
