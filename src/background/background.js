@@ -1,5 +1,5 @@
 import { checkGitHub } from './scripts/github.js';
-import { checkAzureDevOps } from './scripts/azdevops.js';
+import { checkAzureDevOps } from './scripts/azuredevops.js';
 
 // Global variable to store the flag value
 let flagEnabled = false;
@@ -25,6 +25,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
 // adds a listener to tab change
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-	checkAzureDevOps(tabId, changeInfo, tab, flagEnabled);
-	checkGitHub(tabId, changeInfo, tab, flagEnabled);
+    checkGitHub(tabId, changeInfo, tab, flagEnabled);
+    checkAzureDevOps(tabId, changeInfo, tab, flagEnabled);
 });
