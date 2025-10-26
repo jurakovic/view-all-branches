@@ -65,6 +65,9 @@ function changeBranchesHref(loggingEnabled) {
             log(`Found and updated ${nodeList.length} new branch link(s).`);
             nodeList.forEach(anchor => {
                 anchor.href = `${anchor.href}/all`;
+                // Apply styles for debugging
+                //anchor.style.color = 'red';
+                //anchor.style.fontWeight = 'bold';
             });
         }
     };
