@@ -63,8 +63,17 @@ function changeBranchesHref(loggingEnabled) {
 
         if (nodeList.length > 0) {
             log(`Found and updated ${nodeList.length} new branch link(s).`);
+
             nodeList.forEach(anchor => {
+                // Prevent GitHub's SPA routing from interfering
+                anchor.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    window.location.href = anchor.href;
+                });
+
+                // Update the href to point to the "All" branches tab
                 anchor.href = `${anchor.href}/all`;
+
                 // Apply styles for debugging
                 //anchor.style.color = 'red';
                 //anchor.style.fontWeight = 'bold';
