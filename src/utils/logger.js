@@ -17,7 +17,7 @@ updateFlagValue();
 chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'sync' && changes.loggingEnabled) {
         loggingEnabled = changes.loggingEnabled.newValue;
-        console.log('Logging flag value changed:', loggingEnabled);
+        console.log('loggingEnabled flag value changed:', loggingEnabled);
     }
 });
 

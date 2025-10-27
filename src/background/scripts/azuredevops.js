@@ -1,9 +1,9 @@
 import { log } from '../../utils/logger.js';
 
-export function checkAzureDevOps(tabId, changeInfo, tab, flagEnabled) {
+export function checkAzureDevOps(tabId, changeInfo, tab, azureDevOps) {
     const urlPattern = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
 
-    if (flagEnabled && urlPattern.test(tab.url) &&
+    if (azureDevOps && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
         log('matched url, page load complete, injecting script');
 

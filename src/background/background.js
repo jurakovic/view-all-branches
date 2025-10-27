@@ -2,13 +2,16 @@ import { checkGitHub } from './scripts/github.js';
 import { checkAzureDevOps } from './scripts/azuredevops.js';
 
 // Global variable to store the flag value
-let flagEnabled = false;
+let githubEnabled = false;
+let azureDevOpsEnabled = false;
 
 // Function to update the flag value when it changes
 function updateFlagValue() {
-    chrome.storage.sync.get(['flagEnabled'], (result) => {
-        flagEnabled = result.flagEnabled || false; // Default to false if not set
-        console.log('Flag value updated:', flagEnabled);
+    chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled'], (result) => {
+        githubEnabled = result.githubEnabled || false; // Default to false if not set
+        azureDevOpsEnabled = result.azureDevOpsEnabled || false; // Default to false if not set
+        console.log('githubEnabled value updated:', githubEnabled);
+        console.log('azureDevOpsEnabled value updated:', azureDevOpsEnabled);
     });
 }
 
@@ -17,14 +20,18 @@ updateFlagValue();
 
 // Listen for changes in the storage to update the flag dynamically
 chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === 'sync' && changes.flagEnabled) {
-        flagEnabled = changes.flagEnabled.newValue;
-        console.log('Flag value changed:', flagEnabled);
+    if (areaName === 'sync' && changes.githubEnabled) {
+        githubEnabled = changes.githubEnabled.newValue;
+        console.log('githubEnabled value changed:', githubEnabled);
+    }
+    if (areaName === 'sync' && changes.azureDevOpsEnabled) {
+        azureDevOpsEnabled = changes.azureDevOpsEnabled.newValue;
+        console.log('azureDevOpsEnabled value changed:', azureDevOpsEnabled);
     }
 });
 
 // adds a listener to tab change
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    checkGitHub(tabId, changeInfo, tab, flagEnabled);
-    checkAzureDevOps(tabId, changeInfo, tab, flagEnabled);
+    checkGitHub(tabId, changeInfo, tab, githubEnabled);
+    checkAzureDevOps(tabId, changeInfo, tab, azureDevOpsEnabled);
 });

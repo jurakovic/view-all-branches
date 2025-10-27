@@ -1,9 +1,9 @@
 import { log } from '../../utils/logger.js';
 
-export function checkGitHub(tabId, changeInfo, tab, flagEnabled) {
+export function checkGitHub(tabId, changeInfo, tab, githubEnabled) {
     const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
 
-    if (flagEnabled && urlPattern.test(tab.url) &&
+    if (githubEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
         log('matched url, page load complete, injecting script');
 
