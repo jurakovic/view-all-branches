@@ -58,8 +58,8 @@ function changeBranchesHref(loggingEnabled) {
 
     // This function finds and updates the branch links
     const updateBranchLinks = () => {
-        // Select links that have the exact href and have not been updated yet
-        const nodeList = document.querySelectorAll(`a[href='${branchesHref}']`);
+        // Select links that have the exact href but EXCLUDE those that are part of a tab interface.
+        const nodeList = document.querySelectorAll(`a[href='${branchesHref}']:not([role='tab'])`);
 
         if (nodeList.length > 0) {
             log(`Found and updated ${nodeList.length} new branch link(s).`);
