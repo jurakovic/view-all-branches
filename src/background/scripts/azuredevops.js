@@ -65,8 +65,8 @@ function changeBranchesHref(loggingEnabled) {
                 anchor.href = `${anchor.href}?_a=all`;
 
                 // Apply styles for debugging
-                //anchor.style.color = 'red';
-                //anchor.style.fontWeight = 'bold';
+                anchor.style.color = 'red';
+                anchor.style.fontWeight = 'bold';
             });
         }
     };

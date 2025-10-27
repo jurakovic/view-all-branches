@@ -46,20 +46,10 @@ function changeBranchesHref(loggingEnabled) {
 
     log("Page loaded, setting up link observer.");
 
-    const rx = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
-    const match = rx.exec(document.location);
-    if (!match) return;
-
-    const user = match[1];
-    const repo = match[2];
-    log(`User: ${user}`);
-    log(`Repo: ${repo}`);
-    const branchesHref = `/${user}/${repo}/branches`;
-
     // This function finds and updates the branch links
     const updateBranchLinks = () => {
         // Select links that have the exact href but EXCLUDE those that are part of a tab interface.
-        const nodeList = document.querySelectorAll(`a[href='${branchesHref}']:not([role='tab'])`);
+        const nodeList = document.querySelectorAll(`a[href$='/branches']:not([role='tab'])`);
 
         if (nodeList.length > 0) {
             log(`Found and updated ${nodeList.length} new branch link(s).`);
@@ -75,8 +65,8 @@ function changeBranchesHref(loggingEnabled) {
                 anchor.href = `${anchor.href}/all`;
 
                 // Apply styles for debugging
-                //anchor.style.color = 'red';
-                //anchor.style.fontWeight = 'bold';
+                anchor.style.color = 'red';
+                anchor.style.fontWeight = 'bold';
             });
         }
     };
