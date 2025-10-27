@@ -1,6 +1,7 @@
 {
     "manifest_version": 3,
     "name": "View All Branches",
+    "description": "Automatically redirects branch links to show all branches",
     "version": "1.0",
     "permissions": [ "tabs", "scripting", "storage" ],
     "host_permissions": [
