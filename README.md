@@ -41,11 +41,12 @@ The extension icon should now appear in your browser's toolbar.
 ## How to Use
 
 1.  Navigate to a repository page on either **GitHub** or **Azure DevOps**.
-    -   **GitHub Example**: `https://github.com/owner/repo`
+    -   **GitHub Example**: `https://github.com/jurakovic/view-all-branches`
     -   **Azure DevOps Example**: `https://dev.azure.com/organization/project/_git/repository`
 2.  Click the extension icon in your browser's toolbar to open the settings popup.
 3.  Use the toggles to:
-    -   **Enable href update**: Turn the automatic link modification on or off.
-    -   **Enable logging**: Turn on console logging for debugging purposes.
+    -   **GitHub**: Turn the automatic link modification for GitHub on or off.
+    -   **Azure DevOps**: Turn the automatic link modification for Azure DevOps on or off.
+    -   **Console Logs**: Turn on console logging for debugging purposes.
 
-When the feature is enabled, any link on the page that points to a repository's branches will be automatically updated to direct you to the "All Branches" view.
+When the feature is enabled for desired platform, any link on the page that points to a repository's branches will be automatically updated to direct you to the "All Branches" view.
