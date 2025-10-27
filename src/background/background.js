@@ -2,14 +2,14 @@ import { checkGitHub } from './scripts/github.js';
 import { checkAzureDevOps } from './scripts/azuredevops.js';
 
 // Global variable to store the flag value
-let githubEnabled = false;
-let azureDevOpsEnabled = false;
+let githubEnabled = true;
+let azureDevOpsEnabled = true;
 
 // Function to update the flag value when it changes
 function updateFlagValue() {
     chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled'], (result) => {
-        githubEnabled = result.githubEnabled || false; // Default to false if not set
-        azureDevOpsEnabled = result.azureDevOpsEnabled || false; // Default to false if not set
+        githubEnabled = result.githubEnabled ?? true; // Default to true if not set
+        azureDevOpsEnabled = result.azureDevOpsEnabled ?? true; // Default to true if not set
         console.log('githubEnabled value updated:', githubEnabled);
         console.log('azureDevOpsEnabled value updated:', azureDevOpsEnabled);
     });

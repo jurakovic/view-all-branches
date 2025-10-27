@@ -1,11 +1,10 @@
-
 // Global variable to store the flag value
-let loggingEnabled = false;
+let loggingEnabled = true;
 
 // Function to update the flag value when it changes
 function updateFlagValue() {
     chrome.storage.sync.get(['loggingEnabled'], (result) => {
-        loggingEnabled = result.loggingEnabled || false; // Default to false if not set
+        loggingEnabled = result.loggingEnabled ?? true; // Default to true if not set
         console.log('Logging flag value updated:', loggingEnabled);
     });
 }

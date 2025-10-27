@@ -1,13 +1,12 @@
-
 const cbxGitHub = document.getElementById('cbxGitHub');
 const cbxAzureDevOps = document.getElementById('cbxAzureDevOps');
 const cbxLogging = document.getElementById('cbxLogging');
 
 // Load the saved state from storage when the popup opens
 chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled', 'loggingEnabled'], (result) => {
-    cbxGitHub.checked = result.githubEnabled || false; // Default to true
-    cbxAzureDevOps.checked = result.azureDevOpsEnabled || false; // Default to true
-    cbxLogging.checked = result.loggingEnabled || false; // Default to true
+    cbxGitHub.checked = result.githubEnabled ?? true; // Default to true
+    cbxAzureDevOps.checked = result.azureDevOpsEnabled ?? true; // Default to true
+    cbxLogging.checked = result.loggingEnabled ?? true; // Default to true
 });
 
 // Save the state whenever the cbx is clicked
