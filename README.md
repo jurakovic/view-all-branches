@@ -31,3 +31,5 @@ To install the extension locally in a Chromium-based browser (like Google Chrome
 2. In your browser, navigate to `chrome://extensions` or `edge://extensions`
 3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the `src` folder from this repository
+
+> See more details [here](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked).
