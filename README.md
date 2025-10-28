@@ -28,6 +28,6 @@ To install the extension locally in a Chromium-based browser (like Google Chrome
    ```bash
    git clone https://github.com/jurakovic/view-all-branches.git
    ```
-2. In your browser, navigate to [`chrome://extensions`](chrome://extensions) or [`edge://extensions`](edge://extensions)
+2. In your browser, navigate to `chrome://extensions` or `edge://extensions`
 3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the `src` folder from this repository
