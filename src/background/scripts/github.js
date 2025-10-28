@@ -1,20 +1,20 @@
 import { log } from '../../utils/logger.js';
 
-export function checkGitHub(tabId, changeInfo, tab, githubEnabled) {
+export function checkGitHub(tabId, changeInfo, tab, isEnabled) {
     const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
 
-    if (githubEnabled && urlPattern.test(tab.url) &&
+    if (isEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
-        log('matched url, page load complete, injecting script');
+        log('Matched GitHub URL, page load complete, injecting script');
 
         // Get the logging state and pass it to the injected script
         chrome.storage.sync.get(['loggingEnabled'], (result) => {
-            injectScriptGitHub(tabId, result.loggingEnabled || false);
+            injectScript(tabId, result.loggingEnabled || false);
         });
     }
 };
 
-function injectScriptGitHub(tabId, loggingEnabled) {
+function injectScript(tabId, loggingEnabled) {
     chrome.scripting.executeScript(
         {
             target: { tabId: tabId },
@@ -73,7 +73,6 @@ function changeBranchesHref(loggingEnabled) {
 
     // Create an observer to watch for DOM changes
     const observer = new MutationObserver((mutations) => {
-        // We can debounce this if it becomes a performance issue, but for now, it's fine.
         updateBranchLinks();
     });
 
