@@ -5,9 +5,7 @@
 
 ## Description
 
-When navigating a repository on GitHub, clicking the "Branches" link typically shows you an overview page with only a subset of active branches. This extension streamlines that process by changing the link's destination to the comprehensive `/branches/all` view, saving you a click every time.
-
-Similarly, on Azure DevOps, the extension modifies "Branches" links to navigate directly to the "All" tab, bypassing the default "Mine" view. This works for the current repository as well as for other repositories linked in the header navigation.
+When navigating a repository on GitHub or Azure DevOps, users often need to access the "All Branches" view to see a complete list of branches. By default, clicking the "Branches" link takes you to a filtered view (like "Overview" or "Mine"), requiring an additional click to reach the full list. This extension streamlines that process by redirecting the "Branches" link to the comprehensive "All Branches" view, saving you time and effort.
 
 The extension is lightweight, configurable, and can be enabled or disabled at any time through a simple popup interface.
 
@@ -33,3 +31,13 @@ To install the extension locally in a Chromium-based browser (like Google Chrome
 4. Click "Load unpacked" and select the `src` folder from this repository
 
 > See more details [here](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked).
+
+## Roadmap
+
+- Add support for additional platforms (e.g., GitLab, Bitbucket).
+- Publish the extension to the Chrome Web Store and Microsoft Edge Add-ons for easier installation.
+- Port the extension to Firefox and other browsers.
+
+## License
+
+MIT
