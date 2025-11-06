@@ -9,6 +9,12 @@ When navigating a repository on GitHub or Azure DevOps, users often need to acce
 
 The extension is lightweight, configurable, and can be enabled or disabled at any time through a simple popup interface.
 
+## Motivation
+
+Most of the time, I want to see the complete branch list rather than a subset filtered by some criteria. I found the default filtered views on GitHub to be more of a hindrance than a help. Since GitHub does not provide a built-in option to change this default behavior, I created this extension to automatically redirect to the "All Branches" view.
+
+I've been using this extension personally for quite some time to streamline my daily workflow. Eventually, I expanded it to support Azure DevOps as well, and decided to make it publicly available for other developers who maybe share the same preference.
+
 ## Features
 
 - **Multi-Platform Support**: Works seamlessly on both GitHub and Azure DevOps.
