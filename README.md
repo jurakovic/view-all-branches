@@ -1,13 +1,9 @@
 
 # View All Branches
 
-**View All Branches** is a browser extension that enhances your workflow on GitHub and Azure DevOps by automatically modifying the "Branches" link to take you directly to the "All Branches" page.
+A browser extension that automatically modifies the "Branches" link to the "All Branches" page.
 
-## Description
-
-When navigating a repository on GitHub or Azure DevOps, users often need to access the "All Branches" view to see a complete list of branches. By default, clicking the "Branches" link takes you to a filtered view (like "Overview" or "Mine"), requiring an additional click to reach the full list. This extension streamlines that process by redirecting the "Branches" link to the comprehensive "All Branches" view, saving you time and effort.
-
-The extension is lightweight, configurable, and can be enabled or disabled at any time through a simple popup interface.
+<img src="media/demo.gif" width="90%">
 
 ## Motivation
 
@@ -20,11 +16,10 @@ Most of the code is vibe coded with GitHub Copilot and sure, it could be improve
 ## Features
 
 - **Multi-Platform Support**: Works seamlessly on both GitHub and Azure DevOps.
-- **Automatic Link Modification**: Automatically changes branch links to point to the "All Branches" view on both platforms.
 - **Dynamic Content Support**: Uses a `MutationObserver` to detect and update links that are loaded dynamically, such as the branches dropdown in GitHub and header navigation in Azure DevOps.
 - **Configurable Settings**: Enable/disable functionality per platform through the popup interface.
-- **Debug Logging**: Optional console logging for troubleshooting.
 - **Minimalist UI**: A clean and simple popup for managing settings.
+- **Debug Logging**: Optional console logging for troubleshooting.
 
 ## Installation
 
