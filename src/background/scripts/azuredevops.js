@@ -1,7 +1,7 @@
 import { log } from '../../utils/logger.js';
 
 export function checkAzureDevOps(tabId, changeInfo, tab, isEnabled) {
-    const urlPattern = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%-\.]+/;
+    const urlPattern = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%._-]+/;
 
     if (isEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {

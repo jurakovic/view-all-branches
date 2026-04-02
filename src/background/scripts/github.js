@@ -1,7 +1,7 @@
 import { log } from '../../utils/logger.js';
 
 export function checkGitHub(tabId, changeInfo, tab, isEnabled) {
-    const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9-_\.]+)\/([a-zA-Z0-9-_\.]+)\/?/;
+    const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/;
 
     if (isEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
