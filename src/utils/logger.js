@@ -1,5 +1,5 @@
 // Global variable to store the flag value
-let loggingEnabled = true;
+export let loggingEnabled = true;
 
 // Function to update the flag value when it changes
 function updateFlagValue() {

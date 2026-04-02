@@ -1,21 +1,18 @@
 import { checkGitHub } from './scripts/github.js';
 import { checkAzureDevOps } from './scripts/azuredevops.js';
-import { log } from '../utils/logger.js';
+import { log, loggingEnabled } from '../utils/logger.js';
 
 // Global variable to store the flag value
 let githubEnabled = true;
 let azureDevOpsEnabled = true;
-let loggingEnabled = true;
 
 // Function to update the flag value when it changes
 function updateFlagValue() {
-    chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled', 'loggingEnabled'], (result) => {
+    chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled'], (result) => {
         githubEnabled = result.githubEnabled ?? true; // Default to true if not set
         azureDevOpsEnabled = result.azureDevOpsEnabled ?? true; // Default to true if not set
-        loggingEnabled = result.loggingEnabled ?? true; // Default to true if not set
         log('githubEnabled value updated: ' + githubEnabled);
         log('azureDevOpsEnabled value updated: ' + azureDevOpsEnabled);
-        log('loggingEnabled value updated: ' + loggingEnabled);
     });
 }
 
@@ -31,10 +28,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'sync' && changes.azureDevOpsEnabled) {
         azureDevOpsEnabled = changes.azureDevOpsEnabled.newValue;
         log('azureDevOpsEnabled value changed: ' + azureDevOpsEnabled);
-    }
-    if (areaName === 'sync' && changes.loggingEnabled) {
-        loggingEnabled = changes.loggingEnabled.newValue;
-        log('loggingEnabled value changed: ' + loggingEnabled);
     }
 });
 
