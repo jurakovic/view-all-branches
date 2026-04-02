@@ -1,16 +1,12 @@
 import { log } from '../../utils/logger.js';
 
-export function checkGitHub(tabId, changeInfo, tab, isEnabled) {
+export function checkGitHub(tabId, changeInfo, tab, isEnabled, loggingEnabled) {
     const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/;
 
     if (isEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
         log('Matched GitHub URL, page load complete, injecting script');
-
-        // Get the logging state and pass it to the injected script
-        chrome.storage.sync.get(['loggingEnabled'], (result) => {
-            injectScript(tabId, result.loggingEnabled ?? true);
-        });
+        injectScript(tabId, loggingEnabled);
     }
 };
 

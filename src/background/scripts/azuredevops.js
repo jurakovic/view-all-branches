@@ -1,16 +1,12 @@
 import { log } from '../../utils/logger.js';
 
-export function checkAzureDevOps(tabId, changeInfo, tab, isEnabled) {
+export function checkAzureDevOps(tabId, changeInfo, tab, isEnabled, loggingEnabled) {
     const urlPattern = /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%._-]+/;
 
     if (isEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
         log('Matched Azure DevOps URL, page load complete, injecting script');
-
-        // Get the logging state and pass it to the injected script
-        chrome.storage.sync.get(['loggingEnabled'], (result) => {
-            injectScript(tabId, result.loggingEnabled ?? true);
-        });
+        injectScript(tabId, loggingEnabled);
     }
 };
 
