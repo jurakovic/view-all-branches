@@ -9,7 +9,7 @@ export function checkGitHub(tabId, changeInfo, tab, isEnabled) {
 
         // Get the logging state and pass it to the injected script
         chrome.storage.sync.get(['loggingEnabled'], (result) => {
-            injectScript(tabId, result.loggingEnabled || false);
+            injectScript(tabId, result.loggingEnabled ?? true);
         });
     }
 };
