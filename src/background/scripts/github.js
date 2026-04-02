@@ -1,4 +1,5 @@
 import { log } from '../../utils/logger.js';
+import { injectScript } from '../../utils/scripting.js';
 
 export function checkGitHub(tabId, changeInfo, tab, isEnabled, loggingEnabled) {
     const urlPattern = /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/;
@@ -6,19 +7,9 @@ export function checkGitHub(tabId, changeInfo, tab, isEnabled, loggingEnabled) {
     if (isEnabled && urlPattern.test(tab.url) &&
         changeInfo.status === 'complete') {
         log('Matched GitHub URL, page load complete, injecting script');
-        injectScript(tabId, loggingEnabled);
+        injectScript(tabId, changeBranchesHref, loggingEnabled);
     }
 };
-
-function injectScript(tabId, loggingEnabled) {
-    chrome.scripting.executeScript(
-        {
-            target: { tabId: tabId },
-            function: changeBranchesHref,
-            args: [loggingEnabled] // Pass loggingEnabled state as an argument
-        }
-    );
-}
 
 function changeBranchesHref(loggingEnabled) {
     // Helper function for logging within the page context
