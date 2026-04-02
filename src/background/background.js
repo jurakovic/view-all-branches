@@ -4,12 +4,12 @@ import { injectScript } from '../utils/scripting.js';
 const platforms = [
     {
         urlPattern: /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/,
-        script: 'background/scripts/githubPage.js',
+        script: 'background/scripts/github.js',
         enabledKey: 'githubEnabled',
     },
     {
         urlPattern: /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%._-]+/,
-        script: 'background/scripts/azuredevopsPage.js',
+        script: 'background/scripts/azuredevops.js',
         enabledKey: 'azureDevOpsEnabled',
     },
 ];
