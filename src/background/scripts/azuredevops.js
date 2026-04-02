@@ -68,11 +68,13 @@ function changeBranchesHref(loggingEnabled) {
                 //anchor.style.color = 'red';
                 //anchor.style.fontWeight = 'bold';
             });
+
+            observer.disconnect();
         }
     };
 
     // Create an observer to watch for DOM changes
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(() => {
         updateBranchLinks();
     });
 
