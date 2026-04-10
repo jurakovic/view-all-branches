@@ -1,6 +1,21 @@
 import { log, loggingEnabled } from '../utils/logger.js';
 import { injectScript } from '../utils/scripting.js';
 
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+let customGitlabPlatforms = [];
+
+function updateCustomDomains(domains) {
+    customGitlabPlatforms = domains.map(domain => ({
+        urlPattern: new RegExp(`^https://${escapeRegex(domain)}/`),
+        script: 'background/scripts/gitlab.js',
+        enabledKey: 'gitlabEnabled',
+    }));
+    log('Custom GitLab domains updated: ' + domains.join(', '));
+}
+
 const platforms = [
     {
         urlPattern: /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/,
@@ -36,6 +51,10 @@ function updateFlagValues() {
 
 updateFlagValues();
 
+chrome.storage.sync.get(['gitlabCustomDomains'], (result) => {
+    updateCustomDomains(result.gitlabCustomDomains ?? []);
+});
+
 chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== 'sync') return;
     for (const key of Object.keys(enabled)) {
@@ -44,11 +63,14 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
             log(key + ' value changed: ' + enabled[key]);
         }
     }
+    if (changes.gitlabCustomDomains) {
+        updateCustomDomains(changes.gitlabCustomDomains.newValue ?? []);
+    }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== 'complete') return;
-    for (const platform of platforms) {
+    for (const platform of [...platforms, ...customGitlabPlatforms]) {
         if (enabled[platform.enabledKey] && platform.urlPattern.test(tab.url)) {
             log('Matched ' + platform.enabledKey + ', injecting script');
             injectScript(tabId, platform.script, loggingEnabled);
