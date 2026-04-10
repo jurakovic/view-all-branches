@@ -3,8 +3,15 @@
 
 log("Page loaded, setting up link observer.");
 
+window.__viewAllBranchesDisabled = false;
+
 // This function finds and updates the branch links
 const updateBranchLinks = () => {
+    if (window.__viewAllBranchesDisabled) {
+        observer.disconnect();
+        return;
+    }
+
     const nodeList = document.querySelectorAll(`a[href$='/-/branches']`);
 
     if (nodeList.length > 0) {

@@ -3,8 +3,15 @@
 
 log("Page loaded, setting up link observer.");
 
+window.__viewAllBranchesDisabled = false;
+
 // This function finds and updates the branch links
 const updateBranchLinks = () => {
+    if (window.__viewAllBranchesDisabled) {
+        observer.disconnect();
+        return;
+    }
+
     // Select any link that points to a branches page for any repo, but has not been updated yet.
     const nodeList = document.querySelectorAll("a[href*='/_git/'][href$='/branches']");
 
