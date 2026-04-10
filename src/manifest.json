@@ -9,6 +9,9 @@
         "https://dev.azure.com/*",
         "https://gitlab.com/*/*"
     ],
+    "optional_host_permissions": [
+        "*://*/*"
+    ],
     "action": {
         "default_popup": "popup/popup.html"
     },

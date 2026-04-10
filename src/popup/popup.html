@@ -75,6 +75,87 @@
             display: flex;
             justify-content: space-around;
         }
+
+        .gitlab-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .domain-section {
+            padding: 6px 8px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .domain-label {
+            color: #aaa;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .domain-input-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 2px;
+        }
+
+        #txtDomain {
+            flex: 1;
+            background-color: #2c2c2c;
+            border: 1px solid #555;
+            border-radius: 3px;
+            color: #f1f1f1;
+            font-size: 12px;
+            padding: 4px 6px;
+            min-width: 0;
+        }
+
+            #txtDomain:focus {
+                outline: none;
+                border-color: #777;
+            }
+
+        #btnAddDomain {
+            background-color: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 3px;
+            color: #f1f1f1;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 4px 8px;
+            white-space: nowrap;
+        }
+
+            #btnAddDomain:hover {
+                background-color: #4a4a4a;
+            }
+
+        .domain-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-top: 1px solid #444;
+            color: #ccc;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 2px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+            .remove-btn:hover {
+                color: #f1f1f1;
+            }
     </style>
 </head>
 <body>
@@ -89,10 +170,20 @@
             <input type="checkbox" id="cbxAzureDevOps" />
             <span>Azure DevOps</span>
         </label>
-        <label class="setting-item">
-            <input type="checkbox" id="cbxGitLab" />
-            <span>GitLab</span>
-        </label>
+        <div class="gitlab-group">
+            <label class="setting-item">
+                <input type="checkbox" id="cbxGitLab" />
+                <span>GitLab</span>
+            </label>
+            <div class="domain-section">
+                <div class="domain-label">Custom domains:</div>
+                <div class="domain-input-row">
+                    <input type="text" id="txtDomain" placeholder="gitlab.example.com" />
+                    <button id="btnAddDomain">Add</button>
+                </div>
+                <div id="domainList"></div>
+            </div>
+        </div>
         <h3>Misc.:</h3>
         <label class="setting-item">
             <input type="checkbox" id="cbxLogging" />
