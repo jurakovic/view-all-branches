@@ -30,12 +30,30 @@ function updateFlagValues() {
 
 updateFlagValues();
 
+function disablePlatformInOpenTabs(enabledKey) {
+    const matchingPlatforms = [...platforms].filter(p => p.enabledKey === enabledKey);
+    chrome.tabs.query({}, (tabs) => {
+        for (const tab of tabs) {
+            if (!tab.url) continue;
+            if (matchingPlatforms.some(p => p.urlPattern.test(tab.url))) {
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    func: () => { window.__viewAllBranchesDisabled = true; }
+                }).catch(() => {});
+            }
+        }
+    });
+}
+
 chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== 'sync') return;
     for (const key of Object.keys(enabled)) {
         if (changes[key]) {
             enabled[key] = changes[key].newValue;
             log(key + ' value changed: ' + enabled[key]);
+            if (!enabled[key]) {
+                disablePlatformInOpenTabs(key);
+            }
         }
     }
 });

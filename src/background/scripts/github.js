@@ -3,8 +3,15 @@
 
 log("Page loaded, setting up link observer.");
 
+window.__viewAllBranchesDisabled = false;
+
 // This function finds and updates the branch links
 const updateBranchLinks = () => {
+    if (window.__viewAllBranchesDisabled) {
+        observer.disconnect();
+        return;
+    }
+
     // Select links that have the exact href but EXCLUDE those that are part of a tab interface.
     const nodeList = document.querySelectorAll(`a[href$='/branches']:not([role='tab']):not([href*='/settings/branches'])`);
 
