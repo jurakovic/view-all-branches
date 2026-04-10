@@ -11,7 +11,7 @@ Most of the time, I want to see the complete branch list rather than a subset fi
 
 I've been using this extension personally for quite some time to streamline my daily workflow. Eventually, I expanded it to support Azure DevOps as well, and decided to make it publicly available for other developers who maybe share the same preference.
 
-Most of the code is vibe coded with GitHub Copilot and sure, it could be improved, but - it works (:
+Most of the code is vibe coded with GitHub Copilot and Claude Code, and sure it could be improved, but - it works (:
 
 ## Features
 

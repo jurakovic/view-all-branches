@@ -1,37 +1,69 @@
-import { checkGitHub } from './scripts/github.js';
-import { checkAzureDevOps } from './scripts/azuredevops.js';
+import { log, loggingEnabled } from '../utils/logger.js';
+import { injectScript } from '../utils/scripting.js';
 
-// Global variable to store the flag value
-let githubEnabled = true;
-let azureDevOpsEnabled = true;
+const platforms = [
+    {
+        urlPattern: /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/,
+        script: 'background/scripts/github.js',
+        enabledKey: 'githubEnabled',
+    },
+    {
+        urlPattern: /^https:\/\/dev\.azure\.com\/[a-zA-Z0-9%._-]+/,
+        script: 'background/scripts/azuredevops.js',
+        enabledKey: 'azureDevOpsEnabled',
+    },
+];
 
-// Function to update the flag value when it changes
-function updateFlagValue() {
-    chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled'], (result) => {
-        githubEnabled = result.githubEnabled ?? true; // Default to true if not set
-        azureDevOpsEnabled = result.azureDevOpsEnabled ?? true; // Default to true if not set
-        console.log('githubEnabled value updated:', githubEnabled);
-        console.log('azureDevOpsEnabled value updated:', azureDevOpsEnabled);
+const enabled = {
+    githubEnabled: true,
+    azureDevOpsEnabled: true,
+};
+
+function updateFlagValues() {
+    chrome.storage.sync.get(Object.keys(enabled), (result) => {
+        for (const key of Object.keys(enabled)) {
+            enabled[key] = result[key] ?? true;
+            log(key + ' value updated: ' + enabled[key]);
+        }
     });
 }
 
-// Call updateFlagValue initially to load the current flag state
-updateFlagValue();
+updateFlagValues();
 
-// Listen for changes in the storage to update the flag dynamically
+function disablePlatformInOpenTabs(enabledKey) {
+    const matchingPlatforms = [...platforms].filter(p => p.enabledKey === enabledKey);
+    chrome.tabs.query({}, (tabs) => {
+        for (const tab of tabs) {
+            if (!tab.url) continue;
+            if (matchingPlatforms.some(p => p.urlPattern.test(tab.url))) {
+                chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    func: () => { window.__viewAllBranchesDisabled = true; }
+                }).catch(() => {});
+            }
+        }
+    });
+}
+
 chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === 'sync' && changes.githubEnabled) {
-        githubEnabled = changes.githubEnabled.newValue;
-        console.log('githubEnabled value changed:', githubEnabled);
-    }
-    if (areaName === 'sync' && changes.azureDevOpsEnabled) {
-        azureDevOpsEnabled = changes.azureDevOpsEnabled.newValue;
-        console.log('azureDevOpsEnabled value changed:', azureDevOpsEnabled);
+    if (areaName !== 'sync') return;
+    for (const key of Object.keys(enabled)) {
+        if (changes[key]) {
+            enabled[key] = changes[key].newValue;
+            log(key + ' value changed: ' + enabled[key]);
+            if (!enabled[key]) {
+                disablePlatformInOpenTabs(key);
+            }
+        }
     }
 });
 
-// adds a listener to tab change
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    checkGitHub(tabId, changeInfo, tab, githubEnabled);
-    checkAzureDevOps(tabId, changeInfo, tab, azureDevOpsEnabled);
+    if (changeInfo.status !== 'complete') return;
+    for (const platform of platforms) {
+        if (enabled[platform.enabledKey] && platform.urlPattern.test(tab.url)) {
+            log('Matched ' + platform.enabledKey + ', injecting script');
+            injectScript(tabId, platform.script, loggingEnabled);
+        }
+    }
 });
