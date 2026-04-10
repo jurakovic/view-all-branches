@@ -6,7 +6,7 @@ log("Page loaded, setting up link observer.");
 // This function finds and updates the branch links
 const updateBranchLinks = () => {
     // Select links that have the exact href but EXCLUDE those that are part of a tab interface.
-    const nodeList = document.querySelectorAll(`a[href$='/branches']:not([role='tab'])`);
+    const nodeList = document.querySelectorAll(`a[href$='/branches']:not([role='tab']):not([href*='/settings/branches'])`);
 
     if (nodeList.length > 0) {
         log(`Found and updated ${nodeList.length} new branch link(s).`);
