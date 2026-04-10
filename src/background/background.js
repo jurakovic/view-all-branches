@@ -12,11 +12,17 @@ const platforms = [
         script: 'background/scripts/azuredevops.js',
         enabledKey: 'azureDevOpsEnabled',
     },
+    {
+        urlPattern: /^https:\/\/gitlab\.com\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+/,
+        script: 'background/scripts/gitlab.js',
+        enabledKey: 'gitlabEnabled',
+    },
 ];
 
 const enabled = {
     githubEnabled: true,
     azureDevOpsEnabled: true,
+    gitlabEnabled: true,
 };
 
 function updateFlagValues() {
