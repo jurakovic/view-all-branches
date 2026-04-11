@@ -28,7 +28,10 @@ const updateBranchLinks = () => {
             anchor.href = `${anchor.href}/all`;
         });
 
-        observer.disconnect();
+        // Note: observer.disconnect() is intentionally omitted here (unlike GitHub/Azure DevOps).
+        // GitLab injects hover menu links into the DOM on demand, so the observer must
+        // remain active to catch those links when they appear.
+        //observer.disconnect();
     }
 };
 
