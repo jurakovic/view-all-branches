@@ -6,7 +6,11 @@
     "permissions": [ "tabs", "scripting", "storage" ],
     "host_permissions": [
         "https://github.com/*/*",
-        "https://dev.azure.com/*"
+        "https://dev.azure.com/*",
+        "https://gitlab.com/*/*"
+    ],
+    "optional_host_permissions": [
+        "*://*/*"
     ],
     "action": {
         "default_popup": "popup/popup.html"

@@ -1,6 +1,21 @@
 import { log, loggingEnabled } from '../utils/logger.js';
 import { injectScript } from '../utils/scripting.js';
 
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+let customGitlabPlatforms = [];
+
+function updateCustomDomains(domains) {
+    customGitlabPlatforms = domains.map(domain => ({
+        urlPattern: new RegExp(`^https://${escapeRegex(domain)}/`),
+        script: 'background/scripts/gitlab.js',
+        enabledKey: 'gitlabEnabled',
+    }));
+    log('Custom GitLab domains updated: ' + domains.join(', '));
+}
+
 const platforms = [
     {
         urlPattern: /^https:\/\/github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/?/,
@@ -12,11 +27,17 @@ const platforms = [
         script: 'background/scripts/azuredevops.js',
         enabledKey: 'azureDevOpsEnabled',
     },
+    {
+        urlPattern: /^https:\/\/gitlab\.com\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+/,
+        script: 'background/scripts/gitlab.js',
+        enabledKey: 'gitlabEnabled',
+    },
 ];
 
 const enabled = {
     githubEnabled: true,
     azureDevOpsEnabled: true,
+    gitlabEnabled: true,
 };
 
 function updateFlagValues() {
@@ -30,8 +51,12 @@ function updateFlagValues() {
 
 updateFlagValues();
 
+chrome.storage.sync.get(['gitlabCustomDomains'], (result) => {
+    updateCustomDomains(result.gitlabCustomDomains ?? []);
+});
+
 function disablePlatformInOpenTabs(enabledKey) {
-    const matchingPlatforms = [...platforms].filter(p => p.enabledKey === enabledKey);
+    const matchingPlatforms = [...platforms, ...customGitlabPlatforms].filter(p => p.enabledKey === enabledKey);
     chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
             if (!tab.url) continue;
@@ -56,11 +81,14 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
             }
         }
     }
+    if (changes.gitlabCustomDomains) {
+        updateCustomDomains(changes.gitlabCustomDomains.newValue ?? []);
+    }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== 'complete') return;
-    for (const platform of platforms) {
+    for (const platform of [...platforms, ...customGitlabPlatforms]) {
         if (enabled[platform.enabledKey] && platform.urlPattern.test(tab.url)) {
             log('Matched ' + platform.enabledKey + ', injecting script');
             injectScript(tabId, platform.script, loggingEnabled);
