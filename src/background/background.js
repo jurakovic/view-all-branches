@@ -6,6 +6,7 @@ function escapeRegex(str) {
 }
 
 let customGitlabPlatforms = [];
+let customAzureDevOpsPlatforms = [];
 
 function updateCustomDomains(domains) {
     customGitlabPlatforms = domains.map(domain => ({
@@ -14,6 +15,15 @@ function updateCustomDomains(domains) {
         enabledKey: 'gitlabEnabled',
     }));
     log('Custom GitLab domains updated: ' + domains.join(', '));
+}
+
+function updateAzureDevOpsCustomDomains(domains) {
+    customAzureDevOpsPlatforms = domains.map(domain => ({
+        urlPattern: new RegExp(`^https://${escapeRegex(domain)}/`),
+        script: 'background/scripts/azuredevops.js',
+        enabledKey: 'azureDevOpsEnabled',
+    }));
+    log('Custom Azure DevOps domains updated: ' + domains.join(', '));
 }
 
 const platforms = [
@@ -55,8 +65,12 @@ chrome.storage.sync.get(['gitlabCustomDomains'], (result) => {
     updateCustomDomains(result.gitlabCustomDomains ?? []);
 });
 
+chrome.storage.sync.get(['azureDevOpsCustomDomains'], (result) => {
+    updateAzureDevOpsCustomDomains(result.azureDevOpsCustomDomains ?? []);
+});
+
 function disablePlatformInOpenTabs(enabledKey) {
-    const matchingPlatforms = [...platforms, ...customGitlabPlatforms].filter(p => p.enabledKey === enabledKey);
+    const matchingPlatforms = [...platforms, ...customGitlabPlatforms, ...customAzureDevOpsPlatforms].filter(p => p.enabledKey === enabledKey);
     chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
             if (!tab.url) continue;
@@ -84,11 +98,14 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     if (changes.gitlabCustomDomains) {
         updateCustomDomains(changes.gitlabCustomDomains.newValue ?? []);
     }
+    if (changes.azureDevOpsCustomDomains) {
+        updateAzureDevOpsCustomDomains(changes.azureDevOpsCustomDomains.newValue ?? []);
+    }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== 'complete') return;
-    for (const platform of [...platforms, ...customGitlabPlatforms]) {
+    for (const platform of [...platforms, ...customGitlabPlatforms, ...customAzureDevOpsPlatforms]) {
         if (enabled[platform.enabledKey] && platform.urlPattern.test(tab.url)) {
             log('Matched ' + platform.enabledKey + ', injecting script');
             injectScript(tabId, platform.script, loggingEnabled);
