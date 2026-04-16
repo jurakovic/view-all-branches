@@ -15,117 +15,73 @@ chrome.storage.sync.get(['githubEnabled', 'azureDevOpsEnabled', 'gitlabEnabled',
     cbxAzureDevOps.checked = result.azureDevOpsEnabled ?? true; // Default to true
     cbxGitLab.checked = result.gitlabEnabled ?? true; // Default to true
     cbxLogging.checked = result.loggingEnabled ?? true; // Default to true
-    renderDomainList(result.gitlabCustomDomains ?? []);
-    renderAzureDevOpsDomainList(result.azureDevOpsCustomDomains ?? []);
+    gitlab.render(result.gitlabCustomDomains ?? []);
+    azureDevOps.render(result.azureDevOpsCustomDomains ?? []);
 });
 
-function renderDomainList(domains) {
-    domainList.innerHTML = '';
-    domains.forEach(domain => {
-        const item = document.createElement('div');
-        item.className = 'domain-item';
-        const label = document.createElement('span');
-        label.textContent = domain;
-        const btn = document.createElement('button');
-        btn.className = 'remove-btn';
-        btn.textContent = '×';
-        btn.addEventListener('click', () => removeDomain(domain));
-        item.appendChild(label);
-        item.appendChild(btn);
-        domainList.appendChild(item);
-    });
-}
-
-function addDomain() {
-    let domain = txtDomain.value.trim().toLowerCase();
-    domain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-    if (!domain) return;
-
-    // Save to storage before requesting permission — the permission dialog closes the popup,
-    // which destroys the JS context before any callback inside permissions.request can run.
-    chrome.storage.sync.get(['gitlabCustomDomains'], (result) => {
-        const domains = result.gitlabCustomDomains ?? [];
-        if (domains.includes(domain)) return;
-        domains.push(domain);
-        chrome.storage.sync.set({ gitlabCustomDomains: domains }, () => {
-            renderDomainList(domains);
-            txtDomain.value = '';
+function createDomainManager(storageKey, inputEl, listEl) {
+    function render(domains) {
+        listEl.innerHTML = '';
+        domains.forEach(domain => {
+            const item = document.createElement('div');
+            item.className = 'domain-item';
+            const label = document.createElement('span');
+            label.textContent = domain;
+            const btn = document.createElement('button');
+            btn.className = 'remove-btn';
+            btn.textContent = '×';
+            btn.addEventListener('click', () => remove(domain));
+            item.appendChild(label);
+            item.appendChild(btn);
+            listEl.appendChild(item);
         });
-    });
+    }
 
-    // Request permission after storage is initiated (still synchronous in the user gesture).
-    // The popup will close when the dialog appears; the domain is already saved above.
-    chrome.permissions.request({ origins: [`https://${domain}/*`] });
-}
+    function add() {
+        let domain = inputEl.value.trim().toLowerCase();
+        domain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+        if (!domain) return;
 
-function removeDomain(domain) {
-    chrome.permissions.remove({ origins: [`https://${domain}/*`] }, () => {
-        chrome.storage.sync.get(['gitlabCustomDomains'], (result) => {
-            const domains = (result.gitlabCustomDomains ?? []).filter(d => d !== domain);
-            chrome.storage.sync.set({ gitlabCustomDomains: domains }, () => {
-                renderDomainList(domains);
+        // Save to storage before requesting permission — the permission dialog closes the popup,
+        // which destroys the JS context before any callback inside permissions.request can run.
+        chrome.storage.sync.get([storageKey], (result) => {
+            const domains = result[storageKey] ?? [];
+            if (domains.includes(domain)) return;
+            domains.push(domain);
+            chrome.storage.sync.set({ [storageKey]: domains }, () => {
+                render(domains);
+                inputEl.value = '';
             });
         });
-    });
-}
 
-btnAddDomain.addEventListener('click', addDomain);
+        // Request permission after storage is initiated (still synchronous in the user gesture).
+        // The popup will close when the dialog appears; the domain is already saved above.
+        chrome.permissions.request({ origins: [`https://${domain}/*`] });
+    }
 
-txtDomain.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addDomain();
-});
-
-function renderAzureDevOpsDomainList(domains) {
-    azureDevOpsDomainList.innerHTML = '';
-    domains.forEach(domain => {
-        const item = document.createElement('div');
-        item.className = 'domain-item';
-        const label = document.createElement('span');
-        label.textContent = domain;
-        const btn = document.createElement('button');
-        btn.className = 'remove-btn';
-        btn.textContent = '×';
-        btn.addEventListener('click', () => removeAzureDevOpsDomain(domain));
-        item.appendChild(label);
-        item.appendChild(btn);
-        azureDevOpsDomainList.appendChild(item);
-    });
-}
-
-function addAzureDevOpsDomain() {
-    let domain = txtAzureDevOpsDomain.value.trim().toLowerCase();
-    domain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-    if (!domain) return;
-
-    chrome.storage.sync.get(['azureDevOpsCustomDomains'], (result) => {
-        const domains = result.azureDevOpsCustomDomains ?? [];
-        if (domains.includes(domain)) return;
-        domains.push(domain);
-        chrome.storage.sync.set({ azureDevOpsCustomDomains: domains }, () => {
-            renderAzureDevOpsDomainList(domains);
-            txtAzureDevOpsDomain.value = '';
-        });
-    });
-
-    chrome.permissions.request({ origins: [`https://${domain}/*`] });
-}
-
-function removeAzureDevOpsDomain(domain) {
-    chrome.permissions.remove({ origins: [`https://${domain}/*`] }, () => {
-        chrome.storage.sync.get(['azureDevOpsCustomDomains'], (result) => {
-            const domains = (result.azureDevOpsCustomDomains ?? []).filter(d => d !== domain);
-            chrome.storage.sync.set({ azureDevOpsCustomDomains: domains }, () => {
-                renderAzureDevOpsDomainList(domains);
+    function remove(domain) {
+        chrome.permissions.remove({ origins: [`https://${domain}/*`] }, () => {
+            chrome.storage.sync.get([storageKey], (result) => {
+                const domains = (result[storageKey] ?? []).filter(d => d !== domain);
+                chrome.storage.sync.set({ [storageKey]: domains }, () => {
+                    render(domains);
+                });
             });
         });
+    }
+
+    inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') add();
     });
+
+    return { render, add };
 }
 
-btnAddAzureDevOpsDomain.addEventListener('click', addAzureDevOpsDomain);
+const gitlab = createDomainManager('gitlabCustomDomains', txtDomain, domainList);
+const azureDevOps = createDomainManager('azureDevOpsCustomDomains', txtAzureDevOpsDomain, azureDevOpsDomainList);
 
-txtAzureDevOpsDomain.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addAzureDevOpsDomain();
-});
+btnAddDomain.addEventListener('click', gitlab.add);
+btnAddAzureDevOpsDomain.addEventListener('click', azureDevOps.add);
 
 // Save the state whenever the cbx is clicked
 cbxGitHub.addEventListener('change', () => {

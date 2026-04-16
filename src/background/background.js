@@ -5,25 +5,25 @@ function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-let customGitlabPlatforms = [];
-let customAzureDevOpsPlatforms = [];
+const customDomainConfigs = [
+    { storageKey: 'gitlabCustomDomains',      script: 'background/scripts/gitlab.js',      enabledKey: 'gitlabEnabled' },
+    { storageKey: 'azureDevOpsCustomDomains', script: 'background/scripts/azuredevops.js', enabledKey: 'azureDevOpsEnabled' },
+];
 
-function updateCustomDomains(domains) {
-    customGitlabPlatforms = domains.map(domain => ({
+const customPlatformMap = {};
+
+function updateCustomPlatforms(storageKey, domains) {
+    const { script, enabledKey } = customDomainConfigs.find(c => c.storageKey === storageKey);
+    customPlatformMap[storageKey] = domains.map(domain => ({
         urlPattern: new RegExp(`^https://${escapeRegex(domain)}/`),
-        script: 'background/scripts/gitlab.js',
-        enabledKey: 'gitlabEnabled',
+        script,
+        enabledKey,
     }));
-    log('Custom GitLab domains updated: ' + domains.join(', '));
+    log('Custom domains updated for ' + storageKey + ': ' + domains.join(', '));
 }
 
-function updateAzureDevOpsCustomDomains(domains) {
-    customAzureDevOpsPlatforms = domains.map(domain => ({
-        urlPattern: new RegExp(`^https://${escapeRegex(domain)}/`),
-        script: 'background/scripts/azuredevops.js',
-        enabledKey: 'azureDevOpsEnabled',
-    }));
-    log('Custom Azure DevOps domains updated: ' + domains.join(', '));
+function allCustomPlatforms() {
+    return Object.values(customPlatformMap).flat();
 }
 
 const platforms = [
@@ -61,16 +61,14 @@ function updateFlagValues() {
 
 updateFlagValues();
 
-chrome.storage.sync.get(['gitlabCustomDomains'], (result) => {
-    updateCustomDomains(result.gitlabCustomDomains ?? []);
-});
-
-chrome.storage.sync.get(['azureDevOpsCustomDomains'], (result) => {
-    updateAzureDevOpsCustomDomains(result.azureDevOpsCustomDomains ?? []);
-});
+for (const { storageKey } of customDomainConfigs) {
+    chrome.storage.sync.get([storageKey], (result) => {
+        updateCustomPlatforms(storageKey, result[storageKey] ?? []);
+    });
+}
 
 function disablePlatformInOpenTabs(enabledKey) {
-    const matchingPlatforms = [...platforms, ...customGitlabPlatforms, ...customAzureDevOpsPlatforms].filter(p => p.enabledKey === enabledKey);
+    const matchingPlatforms = [...platforms, ...allCustomPlatforms()].filter(p => p.enabledKey === enabledKey);
     chrome.tabs.query({}, (tabs) => {
         for (const tab of tabs) {
             if (!tab.url) continue;
@@ -95,17 +93,16 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
             }
         }
     }
-    if (changes.gitlabCustomDomains) {
-        updateCustomDomains(changes.gitlabCustomDomains.newValue ?? []);
-    }
-    if (changes.azureDevOpsCustomDomains) {
-        updateAzureDevOpsCustomDomains(changes.azureDevOpsCustomDomains.newValue ?? []);
+    for (const { storageKey } of customDomainConfigs) {
+        if (changes[storageKey]) {
+            updateCustomPlatforms(storageKey, changes[storageKey].newValue ?? []);
+        }
     }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== 'complete') return;
-    for (const platform of [...platforms, ...customGitlabPlatforms, ...customAzureDevOpsPlatforms]) {
+    for (const platform of [...platforms, ...allCustomPlatforms()]) {
         if (enabled[platform.enabledKey] && platform.urlPattern.test(tab.url)) {
             log('Matched ' + platform.enabledKey + ', injecting script');
             injectScript(tabId, platform.script, loggingEnabled);
