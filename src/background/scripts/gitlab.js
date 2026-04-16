@@ -12,7 +12,7 @@ const updateBranchLinks = () => {
         return;
     }
 
-    const nodeList = document.querySelectorAll(`a[href$='/-/branches']`);
+    const nodeList = document.querySelectorAll(`a[href$='/-/branches']:not([role='tab'])`);
 
     if (nodeList.length > 0) {
         log(`Found and updated ${nodeList.length} new branch link(s).`);
